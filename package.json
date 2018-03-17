@@ -9,10 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
-    "mongoose": "^5.0.8",
-    "path": "^0.12.7"
+    "jsonwebtoken": "^8.2.0",
+    "mongoose": "^5.0.9",
+    "path": "^0.12.7",
+    "xss": "^0.3.7"
   }
 }
