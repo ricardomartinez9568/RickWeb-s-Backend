@@ -65,12 +65,32 @@ var ContactSchema = new Schema({
     message: {
         type: String,
         required: true
-    }
+    },
+
 
 })
+var BlogSchema = new Schema({
+    Content: {
+        type: String,
+        required: true
+    },
+    Author: {
+        type: String,
+        required: true
+    },
+    created: {
+        type: Date,
+        default: Date.now()
+    }
+})
+
+var CommentScheme
+
 
 var user = mongoose.model('user', userSchema);
 var ContactForm = mongoose.model('contact', ContactSchema);
+var Blog = mongoose.model('Blog', BlogSchema);
+
 
 // middle ware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -176,10 +196,40 @@ app.post('/contact', xssService.sanitize, function (req, res) {
             .catch((err) => {
                 if (err) throw err;
             })
-            
+
     });
 });
 
-app.listen(port, () => {
-        console.log('connected')
+
+app.post('/blog', function (req, res) {
+    var blogs = new Blog(req.body)
+    console.log(req.body);
+    blogs.save(function (err, prodcut) {
+        if (err) throw err;
+        res.status(200).send({
+            type: true,
+            data: "Blog Saved"
+        }
+        )
     })
+})
+
+app.get('/blog', function (req, res) {
+    var id = req.headers.headerid
+    id = mongoose.Types.ObjectId(id);
+    Blog.findOne({
+        _id: id
+    }, function(err, data){
+        if(err) throw err;
+        console.log(data);
+        res.status(200).send(data);
+    })
+});
+    
+
+    
+
+
+app.listen(port, () => {
+                console.log('connected')
+            })
