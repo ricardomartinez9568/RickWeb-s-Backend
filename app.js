@@ -84,12 +84,24 @@ var BlogSchema = new Schema({
     }
 })
 
-var CommentScheme
+var CommentScheme = new Schema ({
+    message: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+
+
+})
 
 
 var user = mongoose.model('user', userSchema);
 var ContactForm = mongoose.model('contact', ContactSchema);
 var Blog = mongoose.model('Blog', BlogSchema);
+var Comment = mongoose.model('Comment', CommentScheme);
 
 
 // middle ware
@@ -225,6 +237,19 @@ app.get('/blog', function (req, res) {
         res.status(200).send(data);
     })
 });
+
+app.post('/comment', function (req, res) {
+    var comments = new Comment(req.body)
+    console.log(req.body);
+    comments.save(function (err, prodcut) {
+        if (err) throw err;
+        res.status(200).send({
+            type: true,
+            data: "Comment Saved"
+        }
+        )
+    })
+})
     
 
     
