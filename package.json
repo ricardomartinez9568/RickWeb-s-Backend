@@ -13,9 +13,11 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
+    "jslint": "^0.12.0",
     "jsonwebtoken": "^8.2.0",
-    "mongoose": "^5.0.9",
+    "mongoose": "^5.0.11",
     "path": "^0.12.7",
+    "tslint": "^5.9.1",
     "twilio": "^3.13.1",
     "xss": "^0.3.7"
   }

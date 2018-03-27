@@ -85,17 +85,29 @@ var BlogSchema = new Schema({
 })
 
 var CommentScheme = new Schema ({
-    message: {
-        type: String,
-        required: true
-    },
+    discussionId:String,
     name: {
         type: String,
         required: true
     },
-
-
-})
+    text: {
+        type: String,
+        required: true
+    },
+    replies:[
+        {
+            name: {
+                type: String,
+                default:"Unknown"
+            },
+            content: String
+        }
+    ],
+    createdDate: {
+        type: Date,
+        default: Date.now()
+    }
+});
 
 
 var user = mongoose.model('user', userSchema);
@@ -250,9 +262,20 @@ app.post('/comment', function (req, res) {
         )
     })
 })
-    
+app.post('/comment', function(req, res){
+    commentCollection.find({ discussionid : req.body.discussionid }).toArray(function(err, docs){
+        if (err){
+            throw err;
+            res.sendStatus(500);
+        } else {
+            var result = docs.map(function(data){
+                return data;
+            })
+            res.json(result);
+        }
+    })
+});
 
-    
 
 
 app.listen(port, () => {
