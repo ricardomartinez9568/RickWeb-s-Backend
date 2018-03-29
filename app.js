@@ -16,12 +16,18 @@ const authToken = '16d14b406048ed133a1471561fe43807';
 const client = require('twilio')(accountSid, authToken);
 
 //connecting to db
-mongoose.connect('mongodb://Vazling:password-1@ds257848.mlab.com:57848/ricky');
-mongoose.connection.on('err', function (err) {
-    if (err) {
-        throw err
+mongoose.connect('mongodb://Vazling:password-1@ds257848.mlab.com:57848/ricky', function(err, db){
+     if (err) {
+        console.log(err);
+        console.log('Error Connecting to DB');
+        process.exit(1);
+        throw err;
+    } else {
+        console.log('Connect to DB');
+        commentCollection = db.collection ("comments");
     }
-})
+});
+
 
 var Schema = mongoose.Schema;
 var userSchema = new Schema({
@@ -84,21 +90,19 @@ var BlogSchema = new Schema({
     }
 })
 
-var CommentScheme = new Schema ({
-    discussionId:String,
+var commentSchema = new Schema({
+    discussionId: String,
     name: {
         type: String,
-        required: true
     },
     text: {
         type: String,
-        required: true
     },
     replies:[
         {
             name: {
                 type: String,
-                default:"Unknown"
+                default:"Anonymous"
             },
             content: String
         }
@@ -106,14 +110,14 @@ var CommentScheme = new Schema ({
     createdDate: {
         type: Date,
         default: Date.now()
-    }
+    },
 });
 
 
 var user = mongoose.model('user', userSchema);
 var ContactForm = mongoose.model('contact', ContactSchema);
 var Blog = mongoose.model('Blog', BlogSchema);
-var Comment = mongoose.model('Comment', CommentScheme);
+var Comment = mongoose.model('Comment', commentSchema);
 
 
 // middle ware
@@ -243,27 +247,27 @@ app.get('/blog', function (req, res) {
     id = mongoose.Types.ObjectId(id);
     Blog.findOne({
         _id: id
-    }, function(err, data){
-        if(err) throw err;
+    }, function (err, data) {
+        if (err) throw err;
         console.log(data);
         res.status(200).send(data);
     })
 });
 
 app.post('/comment', function (req, res) {
-    var comments = new Comment(req.body)
-    console.log(req.body);
-    comments.save(function (err, prodcut) {
+    var newComment = new Comment(req.body);
+    newComment.save(function (err, product) {
         if (err) throw err;
+        console.log("Comment Saved!");
         res.status(200).send({
             type: true,
-            data: "Comment Saved"
-        }
-        )
-    })
-})
-app.post('/comment', function(req, res){
-    commentCollection.find({ discussionid : req.body.discussionid }).toArray(function(err, docs){
+            data: "Successfully Added New Comment"
+        })
+    });
+});
+
+app.get('/comment', function(req, res){
+    commentCollection.find({ discussionId : req.headers.id }).toArray(function(err, docs){
         if (err){
             throw err;
             res.sendStatus(500);
@@ -272,12 +276,12 @@ app.post('/comment', function(req, res){
                 return data;
             })
             res.json(result);
-        }
+       }
     })
 });
 
 
 
 app.listen(port, () => {
-                console.log('connected')
-            })
+    console.log('connected')
+})
